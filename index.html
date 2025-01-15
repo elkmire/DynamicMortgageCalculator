@@ -104,6 +104,68 @@ h4 {
   grid-template-columns: 1fr;
 }
 
+/* Button Group Container */
+.button-group {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+    justify-content: flex-start;
+}
+
+/* Base Button Styles */
+.btn {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all var(--transition-speed);
+    min-width: 140px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Save Button */
+.save-btn {
+    background-color: var(--neon-green);
+    color: var(--background-dark);
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+}
+
+.save-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
+}
+
+/* Load Button */
+.load-btn {
+    background-color: var(--neon-pink);
+    color: var(--background-dark);
+    box-shadow: 0 0 15px rgba(255, 45, 173, 0.4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 140px; /* Fixed width to match other buttons */
+}
+
+.load-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(255, 45, 173, 0.6);
+}
+
+/* Print Button */
+.print-btn {
+    background-color: var(--neon-purple);
+    color: var(--background-dark);
+    box-shadow: 0 0 15px rgba(184, 41, 255, 0.4);
+}
+
+.print-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 20px rgba(184, 41, 255, 0.6);
+}
+
 @media (min-width: 768px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
@@ -180,25 +242,6 @@ h4 {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-
-/* Buttons */
-.btn {
-  background-color: var(--neon-green);
-  color: var(--background-dark);
-  padding: var(--spacing-sm) var(--spacing-lg);
-  border: none;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  font-weight: bold;
-  text-transform: uppercase;
-  transition: all var(--transition-speed);
-  box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
-}
-
-.btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 0 20px rgba(57, 255, 20, 0.6);
 }
 
 /* Charts */
@@ -451,12 +494,46 @@ h4 {
         page-break-inside: avoid;
     }
 
-    /* Hide non-printable elements */
+    /* Hide non-printable elements but keep appreciation checkbox visible */
     .btn,
     .button-group,
-    input[type="file"],
-    .custom-checkbox input[type="checkbox"] {
+    input[type="file"] {
         display: none !important;
+    }
+
+    /* Special handling for appreciation checkbox in print */
+    #amortization-section .custom-checkbox {
+        display: block !important;
+        margin: 0.5cm 0 !important;
+        color: black !important;
+    }
+
+    #amortization-section .custom-checkbox input[type="checkbox"] {
+        -webkit-appearance: none !important;
+        -moz-appearance: none !important;
+        appearance: none !important;
+        width: 12pt !important;
+        height: 12pt !important;
+        border: 1pt solid black !important;
+        display: inline-block !important;
+        position: relative !important;
+        margin-right: 6pt !important;
+        vertical-align: middle !important;
+    }
+
+    #amortization-section .custom-checkbox input[type="checkbox"]:checked::after {
+        content: '✓' !important;
+        position: absolute !important;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        color: black !important;
+        font-size: 10pt !important;
+    }
+
+    #amortization-section .custom-checkbox label {
+        font-size: 10pt !important;
+        vertical-align: middle !important;
     }
 
     /* Visualization Section Container */
@@ -626,6 +703,13 @@ h4 {
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
   }
+  .button-group {
+        flex-direction: column;
+    }
+    .btn, .load-btn {
+        width: 100%;
+        min-width: 100%;
+    }
 }
 
 </style>
@@ -637,33 +721,33 @@ h4 {
     </header>
 
     <main>
-        <!-- House Details Section -->
-        <section class="container" id="house-details">
-            <h2 class="section-title">House Details</h2>
-            <form class="house-form">
-                <div class="grid">
-                    <div class="input-group">
-                        <label for="houseName">House Name</label>
-                        <input type="text" 
-                               id="houseName" 
-                               placeholder="e.g., Address, Descriptor, etc."
-                               aria-describedby="houseNameHint">
-                        <small id="houseNameHint" class="hint">Enter a memorable name or address for this property</small>
-                    </div>
-                    <div class="input-group">
-                        <label for="houseSummary">Summary/Details</label>
-                        <textarea id="houseSummary" 
-                                  placeholder="Any other details..."
-                                  rows="4"></textarea>
-                    </div>
+    <!-- House Details Section -->
+    <section class="container" id="house-details">
+        <h2 class="section-title">House Details</h2>
+        <form class="house-form">
+            <div class="grid">
+                <div class="input-group">
+                    <label for="houseName">House Name</label>
+                    <input type="text"
+                        id="houseName"
+                        placeholder="Address, Descriptor, etc."
+                        aria-describedby="houseNameHint">
                 </div>
-                <div class="button-group">
-                    <button type="button" class="btn save-btn" onclick="saveConfiguration()">Save</button>
-                    <label for="loadFile" class="btn load-btn">Load</label>
-                    <input type="file" id="loadFile" accept=".json" onchange="loadConfiguration(event)" hidden>
+                <div class="input-group">
+                    <label for="houseSummary">Summary/Details</label>
+                    <textarea id="houseSummary"
+                            placeholder="Other Details"
+                            rows="5"></textarea>
                 </div>
-            </form>
-        </section>
+            </div>
+            <div class="button-group">
+                <button type="button" class="btn save-btn" onclick="saveConfiguration()">Save Config</button>
+                <label for="loadFile" class="btn load-btn">Load Config</label>
+                <input type="file" id="loadFile" accept=".json" onchange="loadConfiguration(event)" hidden>
+                <button type="button" class="btn print-btn" onclick="window.print()">Print Report</button>
+            </div>
+        </form>
+    </section>
 
         <!-- Initial Costs Section -->
         <section class="container" id="initial-costs">
