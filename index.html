@@ -20,7 +20,7 @@
 
     </script>
     <style>
-/* CSS Variables Values */
+/* CSS Variables */
 :root {
   --background-dark: #121212;
   --card-dark: #1e1e1e;
@@ -743,7 +743,7 @@ h4 {
             <div class="button-group">
                 <button type="button" class="btn save-btn" onclick="saveConfiguration()">Save Config</button>
                 <label for="loadFile" class="btn load-btn">Load Config</label>
-                <input type="file" id="loadFile" accept=".json" onchange="loadConfiguration(event)" hidden>
+                <input type="file" id="loadFile" accept=".txt" onchange="loadConfiguration(event)" hidden>
                 <button type="button" class="btn print-btn" onclick="window.print()">Print Report</button>
             </div>
         </form>
@@ -1189,13 +1189,14 @@ function saveConfiguration() {
         alert('Please enter a house name before saving');
         return;
     }
-
     const data = getAllInputValues();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    // Convert to formatted string but keep the same structure
+    const textContent = JSON.stringify(data, null, 2);
+    const blob = new Blob([textContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${houseName.replace(/[^a-z0-9]/gi, '_')}.json`;
+    a.download = `${houseName.replace(/[^a-z0-9]/gi, '_')}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -1205,10 +1206,10 @@ function saveConfiguration() {
 function loadConfiguration(event) {
     const file = event.target.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (e) => {
         try {
+            // Still parse as JSON since we're keeping the same data structure
             const data = JSON.parse(e.target.result);
             Object.entries(data).forEach(([id, value]) => {
                 const element = document.getElementById(id);
@@ -1239,7 +1240,7 @@ function loadConfiguration(event) {
     };
     reader.readAsText(file);
     event.target.value = ''; // Reset file input
-}        
+}
 
 function handleNumericInput(input) {
     // Remove old event listeners if any exist
