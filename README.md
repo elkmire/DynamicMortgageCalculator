@@ -1,4 +1,4 @@
-# [Dynamic Mortgage Calculator](https://elkmire.github.io/DynamicMortgageCalculator)
+# [Mabel's Mortgage Calculator](https://elkmire.github.io/DynamicMortgageCalculator)
 
 Understanding mortgage terms and property value trends is crucial for making informed decisions about real estate investments. A mortgage represents a significant long-term financial commitment, typically spanning 15 to 30 years, where even small differences in interest rates can result in substantial changes to the total amount paid over the loan's lifetime.
 
