@@ -1022,9 +1022,13 @@ h4 {
             </div>
         </section>
 
-        <!-- Amortization Table Section -->
+<!-- Amortization Table Section -->
 <section class="container" id="amortization-section">
     <h2 class="section-title">Amortization Schedule (Yearly)</h2>
+    <div class="custom-checkbox" style="margin-bottom: var(--spacing-md);">
+        <input type="checkbox" id="includeAppreciation" onchange="calculateMortgage()">
+        <label for="includeAppreciation">Add 4% Home Value annually</label>
+    </div>
     <div class="table-responsive">
         <table id="paymentTable" class="table">
             <thead>
@@ -1041,10 +1045,17 @@ h4 {
                 </tr>
             </thead>
             <tbody></tbody>
-            <caption class="caption-bottom">
-                True Value is derived from NET VALUE - (CLOSING COSTS* + ALLOWANCE OVERAGE).<br>
-                True Value does not take into account potential property value increase.
-            </caption>
+            <caption class="caption-bottom" style="
+            color: var(--text-secondary);
+            padding: var(--spacing-md);
+            border-top: 1px solid var(--neon-purple);
+            margin-top: var(--spacing-sm);
+            font-size: 0.9rem;
+            text-align: left;
+            background: rgba(184, 41, 255, 0.05);">
+            <span style="color: var(--neon-pink); font-weight: bold;">TRUE VALUE</span> = <span style="color: var(--neon-green);">NET VALUE</span> - (<span style="color: var(--neon-purple);">CLOSING COSTS*</span> + <span style="color: var(--neon-purple);">ALLOWANCE OVERAGE</span>)<br>
+            <span style="opacity: 0.8; font-style: italic;">When appreciation is enabled, True Value includes a 4% annual compound increase in home value.</span>
+        </caption>
         </table>
     </div>
 </section>
@@ -1528,13 +1539,14 @@ function updateAmortizationTable(standardData, customData = null) {
     tbody.innerHTML = '';
     
     // Get home value and BAH for calculations
-    const homeValue = safeParseFloat(document.getElementById('homeValue').value);
+    const initialHomeValue = safeParseFloat(document.getElementById('homeValue').value);
     const bahAllowance = safeParseFloat(document.getElementById('bahAllowance').value);
+    const includeAppreciation = document.getElementById('includeAppreciation').checked;
     
     // Get closing costs information
     const includeClosingCosts = document.getElementById('includeClosingCosts').checked;
     const closingCostPercent = safeParseFloat(document.getElementById('closingCostPercent').value);
-    const closingCosts = includeClosingCosts ? homeValue * (closingCostPercent / 100) : 0;
+    const closingCosts = includeClosingCosts ? initialHomeValue * (closingCostPercent / 100) : 0;
 
     // Use customData if available, otherwise use standardData
     const dataToShow = customData || standardData;
@@ -1556,8 +1568,13 @@ function updateAmortizationTable(standardData, customData = null) {
         // Add this year's overage to the running total
         cumulativeOverBAH += yearlyOverBAH;
 
+        // Calculate home value with appreciation if enabled
+        const appreciatedHomeValue = includeAppreciation 
+            ? initialHomeValue * Math.pow(1.04, data.year - 1) 
+            : initialHomeValue;
+            
         // Calculate values
-        const netValue = homeValue - data.balance;
+        const netValue = appreciatedHomeValue - data.balance;
         const trueValue = netValue - cumulativeOverBAH - closingCosts;
 
         const row = tbody.insertRow();
@@ -1569,7 +1586,7 @@ function updateAmortizationTable(standardData, customData = null) {
         row.insertCell().textContent = formatCurrency(data.interest);
         row.insertCell().textContent = formatCurrency(data.balance);
         row.insertCell().textContent = formatCurrency(data.totalInterest);
-        row.insertCell().textContent = formatCurrency(cumulativeOverBAH);  // Show cumulative total
+        row.insertCell().textContent = formatCurrency(cumulativeOverBAH);
         row.insertCell().textContent = formatCurrency(netValue);
         row.insertCell().textContent = formatCurrency(trueValue);
 
