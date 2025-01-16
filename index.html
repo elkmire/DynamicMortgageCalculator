@@ -922,74 +922,74 @@ h4 {
             </div>
         </section>
 
-<!-- Payment Comparison Section -->
-<section class="container" id="payment-comparison">
-    <h2 class="section-title">Payment Comparison</h2>
-    <div class="payment-grid">
-        <!-- Standard Payment Column -->
-        <div class="comparison-item">
-            <h3>Standard Monthly Payment</h3>
-            
-            <!-- Monthly Payment Summary -->
-            <div class="payment-group">
-                <h4>Monthly Payment Breakdown</h4>
-                <dl class="payment-details">
-                    <div class="detail-item highlight">
-                        <dt>Base Payment</dt>
-                        <dd id="baseMonthlyPayment">$2,100</dd>
+        <!-- Payment Comparison Section -->
+        <section class="container" id="payment-comparison">
+            <h2 class="section-title">Payment Comparison</h2>
+            <div class="payment-grid">
+                <!-- Standard Payment Column -->
+                <div class="comparison-item">
+                    <h3>Standard Monthly Payment</h3>
+                    
+                    <!-- Monthly Payment Summary -->
+                    <div class="payment-group">
+                        <h4>Monthly Payment Breakdown</h4>
+                        <dl class="payment-details">
+                            <div class="detail-item highlight">
+                                <dt>Base Payment</dt>
+                                <dd id="baseMonthlyPayment">$2,100</dd>
+                            </div>
+                            <div class="detail-item">
+                                <dt>Monthly Expenses</dt>
+                                <dd id="extraCosts">$390</dd>
+                            </div>
+                            <div class="detail-item total">
+                                <dt>Total Payment</dt>
+                                <dd id="standardMonthlyPayment">$2,490</dd>
+                            </div>
+                        </dl>
                     </div>
-                    <div class="detail-item">
-                        <dt>Monthly Expenses</dt>
-                        <dd id="extraCosts">$390</dd>
+    
+                    <!-- BAH Coverage -->
+                    <div class="payment-group">
+                        <h4>BAH Analysis</h4>
+                        <dl class="payment-details">
+                            <div class="detail-item">
+                                <dt>BAH Coverage</dt>
+                                <dd id="bahCoverage">$2,052</dd>
+                            </div>
+                        </dl>
                     </div>
-                    <div class="detail-item total">
-                        <dt>Total Payment</dt>
-                        <dd id="standardMonthlyPayment">$2,490</dd>
+    
+                    <!-- First Year Analysis -->
+                    <div class="payment-group">
+                        <h4>First Year Monthly Averages</h4>
+                        <dl class="payment-details">
+                            <div class="detail-item">
+                                <dt>Principal</dt>
+                                <dd id="standardPrincipal">$450</dd>
+                            </div>
+                            <div class="detail-item">
+                                <dt>Interest</dt>
+                                <dd id="standardInterest">$1,650</dd>
+                            </div>
+                        </dl>
                     </div>
-                </dl>
-            </div>
-
-            <!-- BAH Coverage -->
-            <div class="payment-group">
-                <h4>BAH Analysis</h4>
-                <dl class="payment-details">
-                    <div class="detail-item">
-                        <dt>BAH Coverage</dt>
-                        <dd id="bahCoverage">$2,052</dd>
+    
+                    <!-- Loan Summary -->
+                    <div class="payment-group">
+                        <h4>Loan Overview</h4>
+                        <dl class="payment-details">
+                            <div class="detail-item">
+                                <dt>Total Interest (Life of loan)</dt>
+                                <dd id="standardTotalInterest">$455,000</dd>
+                            </div>
+                            <div class="detail-item">
+                                <dt>Loan Term</dt>
+                                <dd id="displayLoanTerm">30 years</dd>
+                            </div>
+                        </dl>
                     </div>
-                </dl>
-            </div>
-
-            <!-- First Year Analysis -->
-            <div class="payment-group">
-                <h4>First Year Monthly Averages</h4>
-                <dl class="payment-details">
-                    <div class="detail-item">
-                        <dt>Principal</dt>
-                        <dd id="standardPrincipal">$450</dd>
-                    </div>
-                    <div class="detail-item">
-                        <dt>Interest</dt>
-                        <dd id="standardInterest">$1,650</dd>
-                    </div>
-                </dl>
-            </div>
-
-            <!-- Loan Summary -->
-            <div class="payment-group">
-                <h4>Loan Overview</h4>
-                <dl class="payment-details">
-                    <div class="detail-item">
-                        <dt>Total Interest (Life of loan)</dt>
-                        <dd id="standardTotalInterest">$455,000</dd>
-                    </div>
-                    <div class="detail-item">
-                        <dt>Loan Term</dt>
-                        <dd>30 years</dd>
-                    </div>
-                </dl>
-            </div>
-        </div>
+                </div>
 
         <!-- Custom Payment Column -->
         <div class="comparison-item">
@@ -1711,13 +1711,22 @@ function updateAmortizationTable(standardData, customData = null) {
     }
 }
 
-function updateEstimates() {
+function initializeHomeownersInsurance() {
+            const homeValue = safeParseFloat(document.getElementById('homeValue').value);
+            const estimatedInsurance = (homeValue * 3.50 / 1000 / 12).toFixed(2);
+            document.getElementById('insuranceEstimate').textContent = estimatedInsurance;
+            document.getElementById('homeInsurance').value = estimatedInsurance;
+        }
+
+function updateEstimates(trigger = '') {
     const homeValue = safeParseFloat(document.getElementById('homeValue').value);
     
-    // Always calculate and update insurance when home value changes
-    const estimatedInsurance = (homeValue * 3.50 / 1000 / 12).toFixed(2);
-    document.getElementById('insuranceEstimate').textContent = estimatedInsurance;
-    document.getElementById('homeInsurance').value = estimatedInsurance;
+    // Update insurance estimate and value if triggered by home value change
+    if (trigger === 'homeValue') {
+        const estimatedInsurance = (homeValue * 3.50 / 1000 / 12).toFixed(2);
+        document.getElementById('insuranceEstimate').textContent = estimatedInsurance;
+        document.getElementById('homeInsurance').value = estimatedInsurance;
+    }
     
     // Get the tax rate from the slider and calculate the monthly tax
     const taxRate = safeParseFloat(document.getElementById('propertyTaxPercent').value);
@@ -1760,6 +1769,13 @@ function calculateMortgage(customPayment = null) {
     const annualRate = safeParseFloat(document.getElementById('interestRate').value);
     const loanTermMonths = parseInt(document.getElementById('loanTerm').value);
     const monthlyRate = annualRate / 100 / 12;
+
+        // Update displayed loan term
+        const displayLoanTerm = document.getElementById('displayLoanTerm');
+    if (displayLoanTerm) {
+        const years = loanTermMonths / 12;
+        displayLoanTerm.textContent = `${years} year${years === 1 ? '' : 's'}`;
+    }
     
     // Get BAH allowance
     const bahAllowance = safeParseFloat(document.getElementById('bahAllowance').value);
@@ -1953,70 +1969,70 @@ document.getElementById('closingCostPercent').addEventListener('change', () => {
 
 // Initialize calculator
 window.addEventListener('DOMContentLoaded', () => {
-// Function to handle numeric input with decimals
-function handleNumericInput(input) {
-    // Remove old event listeners if any exist
-    const newInput = input.cloneNode(true);
-    input.parentNode.replaceChild(newInput, input);
+    // Function to handle numeric input with decimals
+    function handleNumericInput(input) {
+        // Remove old event listeners if any exist
+        const newInput = input.cloneNode(true);
+        input.parentNode.replaceChild(newInput, input);
 
-    // Set decimal input mode for better mobile experience
-    newInput.setAttribute('inputmode', 'decimal');
+        // Set decimal input mode for better mobile experience
+        newInput.setAttribute('inputmode', 'decimal');
 
-    function isValidInput(value) {
-        // Allow empty string
-        if (value === '') return true;
-        // Allow single decimal point
-        if (value === '.') return true;
-        // Check format: optional digits, optional decimal point, up to 2 decimal places
-        return /^\d*\.?\d{0,2}$/.test(value);
-    }
-
-    function formatValue(value) {
-        if (!value) return '0.00';
-        const number = parseFloat(value);
-        return isNaN(number) ? '0.00' : number.toFixed(2);
-    }
-
-    // Handle input events (covers all input including paste and mobile)
-    newInput.addEventListener('input', (e) => {
-        let value = e.target.value;
-        
-        // If starts with decimal, add leading zero
-        if (value.startsWith('.')) {
-            value = '0' + value;
-            e.target.value = value;
+        function isValidInput(value) {
+            // Allow empty string
+            if (value === '') return true;
+            // Allow single decimal point
+            if (value === '.') return true;
+            // Check format: optional digits, optional decimal point, up to 2 decimal places
+            return /^\d*\.?\d{0,2}$/.test(value);
         }
 
-        // Validate input
-        if (!isValidInput(value)) {
-            e.target.value = e.target.dataset.lastValid || '';
-            return;
+        function formatValue(value) {
+            if (!value) return '0.00';
+            const number = parseFloat(value);
+            return isNaN(number) ? '0.00' : number.toFixed(2);
         }
 
-        // Store valid value
-        e.target.dataset.lastValid = value;
-        
-        // Trigger calculation if needed
-        if (e.target.id === 'homeInsurance' || e.target.id === 'interestRate') {
-            calculateMortgage();
-        }
-    });
+        // Handle input events (covers all input including paste and mobile)
+        newInput.addEventListener('input', (e) => {
+            let value = e.target.value;
+            
+            // If starts with decimal, add leading zero
+            if (value.startsWith('.')) {
+                value = '0' + value;
+                e.target.value = value;
+            }
 
-    // Handle blur events (when input loses focus)
-    newInput.addEventListener('blur', (e) => {
-        const value = e.target.value;
-        if (value) {
-            const formatted = formatValue(value);
-            e.target.value = formatted;
-            e.target.dataset.lastValid = formatted;
+            // Validate input
+            if (!isValidInput(value)) {
+                e.target.value = e.target.dataset.lastValid || '';
+                return;
+            }
+
+            // Store valid value
+            e.target.dataset.lastValid = value;
+            
+            // Trigger calculation if needed
             if (e.target.id === 'homeInsurance' || e.target.id === 'interestRate') {
                 calculateMortgage();
             }
-        }
-    });
+        });
 
-    return newInput;
-}
+        // Handle blur events (when input loses focus)
+        newInput.addEventListener('blur', (e) => {
+            const value = e.target.value;
+            if (value) {
+                const formatted = formatValue(value);
+                e.target.value = formatted;
+                e.target.dataset.lastValid = formatted;
+                if (e.target.id === 'homeInsurance' || e.target.id === 'interestRate') {
+                    calculateMortgage();
+                }
+            }
+        });
+
+        return newInput;
+    }
 
     // Set up numeric inputs
     ['interestRate', 'homeInsurance', 'waterSewer', 'internet', 'gas', 'electric'].forEach(id => {
@@ -2025,6 +2041,9 @@ function handleNumericInput(input) {
             handleNumericInput(input);
         }
     });
+
+    // Initialize homeowners insurance
+    initializeHomeownersInsurance();
 
     // Add event listener for loan term changes
     const loanTermElement = document.getElementById('loanTerm');
@@ -2044,7 +2063,7 @@ function handleNumericInput(input) {
         homeValueElement.addEventListener('input', () => {
             updateDownPayment();
             updateClosingCosts();
-            updateEstimates();
+            updateEstimates('homeValue');
         });
     }
 
@@ -2059,6 +2078,12 @@ function handleNumericInput(input) {
     const downPaymentPercentElement = document.getElementById('downPaymentPercent');
     if (downPaymentPercentElement) {
         downPaymentPercentElement.addEventListener('input', updateDownPayment);
+    }
+
+    // Add event listener for property tax rate changes
+    const propertyTaxElement = document.getElementById('propertyTaxPercent');
+    if (propertyTaxElement) {
+        propertyTaxElement.addEventListener('input', () => updateEstimates('taxRate'));
     }
 
     // Add closing costs checkbox listener
@@ -2078,6 +2103,14 @@ function handleNumericInput(input) {
             calculateMortgage();
         });
     }
+
+    // Utility input listeners
+    ['waterSewer', 'internet', 'gas', 'electric'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', calculateMortgage);
+        }
+    });
 
     // Initialize calculator state
     initializeDownPayment();
